@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    container_name: taskflow-db
+    environment:
+      POSTGRES_DB: taskflow
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - taskflow-net
+
+  web:
+    image: python:3.12-slim
+    container_name: taskflow-web
+    command: ["sleep", "infinity"]
+    networks:
+      - taskflow-net
+
+volumes:
+  postgres_data:
+
+networks:
+  taskflow-net:
+    name: taskflow-net
