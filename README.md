@@ -79,6 +79,29 @@ El repositorio incluye el archivo `compose.yaml`, que permite reproducir la conf
 
 **Nota:** La contraseña debe configurarse localmente y no debe publicarse en GitHub. Los nombres y puertos utilizados en Compose deben estar disponibles; si ya existen contenedores con los mismos nombres, es necesario resolver ese conflicto antes de ejecutarlo.
 
+## Integración continua con Jenkins
+
+Se configuró un pipeline de Jenkins (`TaskFlow-Pipeline`) que se conecta con este repositorio y automatiza el despliegue de la infraestructura Docker.
+
+**Flujo implementado:**
+
+GitHub (push) → Jenkins (Poll SCM) → Docker Compose → Contenedores en ejecución
+
+**Etapas del pipeline** (definidas en el archivo `Jenkinsfile`):
+
+| Etapa | Función |
+|---|---|
+| Clonar | Descarga el código desde GitHub |
+| Validar compose | Verifica que `compose.yaml` sea correcto |
+| Levantar servicios | Ejecuta `docker compose up -d` |
+| Verificar | Muestra el estado de los contenedores con `docker compose ps` |
+
+**Detalles de la configuración:**
+
+- Jenkins revisa el repositorio cada 2 minutos (Poll SCM) y ejecuta el pipeline automáticamente cuando detecta un commit nuevo.
+- La contraseña de PostgreSQL se guarda como credencial segura de Jenkins (`postgres-password`) y se entrega al pipeline como variable de entorno. No se publica en el repositorio.
+- Jenkins se ejecuta en Windows, por lo que el pipeline usa el comando `bat`.
+
 ## 6. Organización y colaboración
 
 GitHub se utiliza para compartir los archivos del proyecto, documentar la infraestructura y facilitar el trabajo colaborativo.
